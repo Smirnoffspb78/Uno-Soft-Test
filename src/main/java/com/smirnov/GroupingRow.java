@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.nio.file.Files.readAllLines;
@@ -21,6 +20,11 @@ import static java.util.stream.Collectors.toSet;
 public class GroupingRow {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
+    /**
+     * Группирует строки и записывает результаты группировки в файл
+     * @param pathInputFile Путь к файлу для чтения данных
+     * @param pathOutputFile Путь к файлу для записи данных
+     */
     public void groupingRow(String pathInputFile, String pathOutputFile) {
         try {
             Set<String> lines = readAllLines(of(pathInputFile))
