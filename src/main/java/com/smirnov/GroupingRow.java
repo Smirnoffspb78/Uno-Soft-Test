@@ -5,6 +5,7 @@ import com.smirnov.model.Column;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -20,23 +21,21 @@ import static java.util.stream.Collectors.toSet;
 public class GroupingRow {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public void groupingRow(String path) {
+    public void groupingRow(String pathInputFile, String pathOutputFile) {
         try {
-            Set<String> lines = readAllLines(of(path))
+            Set<String> lines = readAllLines(of(pathInputFile))
                     .parallelStream()
                     .filter(this::validLine)
-                    .map(line -> line.replace("\"", ""))
                     .collect(toSet());
-            List<List<String>> groups = sortByGroup(lines);
-            List<List<String>> sorterGroup =  groups.stream()
+            List<List<String>> groups = sortByGroup(lines).stream()
                     .sorted((g1, g2) -> Integer.compare(g2.size(), g1.size()))
-                    .collect(Collectors.toList());
+                    .toList();
             long numberGroups = groups.stream()
                     .filter(s -> s.size() > 1)
                     .count();
             String resultInfo = format("Количество групп c размером больше, чем одна строка: %d", numberGroups);
             logger.info(resultInfo);
-            getFileWriter(resultInfo, sorterGroup);
+            getFileWriter(resultInfo, groups, pathOutputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -44,12 +43,13 @@ public class GroupingRow {
 
     /**
      * Записывает результаты в файл
-     * @param resultInfo Количество групп c размером больше, чем одна строка
+     *
+     * @param resultInfo  Количество групп c размером больше, чем одна строка
      * @param sorterGroup Отсортированный по группам строки
      * @throws IOException
      */
-    private void getFileWriter(String resultInfo, List<List<String>> sorterGroup) throws IOException {
-        try (FileWriter writer = new FileWriter("result.txt", false)) {
+    private void getFileWriter(String resultInfo, List<List<String>> sorterGroup, String pathOutputFile) throws IOException {
+        try (FileWriter writer = new FileWriter(pathOutputFile, false)) {
             writer.write(resultInfo);
             writer.write("\n");
             writer.write("\n");
@@ -77,7 +77,9 @@ public class GroupingRow {
         List<List<String>> groups = new ArrayList<>();
         List<Column> columns = new ArrayList<>();
         for (String line : lines) {
-            String[] words = line.split(";");
+            String[] words = Arrays.stream(line.split(";"))
+                    .map(word -> word.replace("\"", ""))
+                    .toArray(String[]::new);
             Integer numberGroup = null;
             if (!columns.isEmpty()) {
                 int i = 0;
