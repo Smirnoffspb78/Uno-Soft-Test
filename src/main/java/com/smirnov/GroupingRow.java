@@ -120,7 +120,7 @@ public class GroupingRow {
     private boolean validLine(String line) {
         String[] words = line.split(";");
         for (String word : words) {
-            if (!Pattern.matches("^\"\\d+\"$|^\"\"$", word)) {
+            if (!Pattern.matches("^\"[^\"]*\"$|^\"\"$", word)) {
                 return false;
             }
         }
