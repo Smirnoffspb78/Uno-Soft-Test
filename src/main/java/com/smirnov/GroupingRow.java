@@ -71,6 +71,7 @@ public class GroupingRow {
                 numGroup++;
             }
         }
+        logger.info("Результат записан в файл " + PATH_OUTPUT_FILE);
     }
 
     /**

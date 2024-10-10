@@ -8,8 +8,9 @@
 
 Для запуска исполняемого jar файла с ограничением по памяти необходимо указать путь к нему в следующем виде:
 
-java -Xmx1g –jar {название проекта}.jar {тестовый-файл}.txt {файл с результатами}.txt
+java -Xmx1g –jar {название проекта}.jar {тестовый-файл}.txt 
 
 ПРИМЕР:
-java -Xmx1g -jar C:/UnoSoft/unosofttest/target/unosofttest-1.0-SNAPSHOT.jar C:/UnoSoft/unosofttest/src/main/resources/lng.txt C:/UnoSoft/unosofttest/src/main/resources/result.txt
+java -Xmx1g -jar C:/UnoSoft/unosofttest/target/unosofttest-1.0-SNAPSHOT.jar C:/UnoSoft/unosofttest/src/main/resources/lng.txt
 
+Результаты сортировки записываются в файл result.txt
