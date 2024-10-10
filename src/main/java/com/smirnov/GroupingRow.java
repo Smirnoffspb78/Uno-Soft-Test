@@ -20,12 +20,14 @@ import static java.util.stream.Collectors.toSet;
 public class GroupingRow {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
+    private static final String PATH_OUTPUT_FILE = "result.txt";
+
     /**
      * Группирует строки и записывает результаты группировки в файл
+     *
      * @param pathInputFile Путь к файлу для чтения данных
-     * @param pathOutputFile Путь к файлу для записи данных
      */
-    public void groupingRow(String pathInputFile, String pathOutputFile) {
+    public void groupingRow(String pathInputFile) {
         try {
             Set<String> lines = readAllLines(of(pathInputFile))
                     .parallelStream()
@@ -39,7 +41,7 @@ public class GroupingRow {
                     .count();
             String resultInfo = format("Количество групп c размером больше, чем одна строка: %d", numberGroups);
             logger.info(resultInfo);
-            getFileWriter(resultInfo, groups, pathOutputFile);
+            getFileWriter(resultInfo, groups);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -52,8 +54,8 @@ public class GroupingRow {
      * @param sorterGroup Отсортированный по группам строки
      * @throws IOException
      */
-    private void getFileWriter(String resultInfo, List<List<String>> sorterGroup, String pathOutputFile) throws IOException {
-        try (FileWriter writer = new FileWriter(pathOutputFile, false)) {
+    private void getFileWriter(String resultInfo, List<List<String>> sorterGroup) throws IOException {
+        try (FileWriter writer = new FileWriter(PATH_OUTPUT_FILE, false)) {
             writer.write(resultInfo);
             writer.write("\n");
             writer.write("\n");
@@ -154,7 +156,7 @@ public class GroupingRow {
                 columns.get(k).addUniqueWord(words[k], numberGroup);
             } else if (k >= columns.size() && words[k].isEmpty()) {
                 columns.add(new Column());
-            } else if (k >= columns.size() && !words[k].isEmpty()) {
+            } else {
                 Column column = new Column();
                 column.addUniqueWord(words[k], numberGroup);
                 columns.add(column);

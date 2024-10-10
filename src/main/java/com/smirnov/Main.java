@@ -12,10 +12,9 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         String pathInputFile = args[0];
-        String pathOutputFile = args[1];
         long start = currentTimeMillis();
         GroupingRow solution = new GroupingRow();
-        solution.groupingRow(pathInputFile, pathOutputFile);
+        solution.groupingRow(pathInputFile);
         long finish = currentTimeMillis();
         main.logger.info(format("Время выполнения программы: %s", (float) (finish - start) / 1000));
     }
