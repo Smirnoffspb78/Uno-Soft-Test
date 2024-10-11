@@ -102,11 +102,10 @@ public class GroupingRow {
                 if (isNull(numberGroup)) {
                     numberGroup = createNewGroup(line, groups);
                 }
-                addColumns(columns, words, numberGroup);
             } else {
                 numberGroup = createNewGroup(line, groups);
-                addColumns(columns, words, numberGroup);
             }
+            addColumns(columns, words, numberGroup);
         }
         return groups;
     }
