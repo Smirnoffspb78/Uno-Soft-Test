@@ -84,26 +84,30 @@ public class GroupingRow {
         List<List<String>> groups = new ArrayList<>();
         List<Column> columns = new ArrayList<>();
         for (String line : lines) {
-            String[] words = Arrays.stream(line.split(";"))
-                    .map(word -> word.replace("\"", ""))
-                    .toArray(String[]::new);
+            String[] words = getWordsLine(line);
             Integer numberGroup = null;
-            if (!columns.isEmpty()) {
-                int i = 0;
-                while (i < words.length && i < columns.size() && isNull(numberGroup)) {
-                    if (!words[i].isEmpty()) {
-                        numberGroup = columns.get(i).getUniqueWordsMap().get(words[i]);
-                        if (!isNull(numberGroup)) {
-                            groups.get(numberGroup).add(line);
+            int i = 0;
+            while (i < words.length && i < columns.size()) {
+                if (!words[i].isEmpty()) {
+                    Integer mergeNumber = columns.get(i).getUniqueWordsMap().get(words[i]);
+                    if (!isNull(mergeNumber) && isNull(numberGroup)) {
+                        numberGroup = mergeNumber;
+                    } else if (!isNull(mergeNumber) && !numberGroup.equals(mergeNumber)) {
+                        List<String> mergeList = groups.get(mergeNumber);
+                        for (String mergeLine : mergeList) {
+                            groups.get(numberGroup).add(mergeLine);
+                            String[] mergeWords = getWordsLine(mergeLine);
+                            addColumns(columns, mergeWords, numberGroup);
                         }
+                        groups.set(mergeNumber, new ArrayList<>());
                     }
-                    i++;
                 }
-                if (isNull(numberGroup)) {
-                    numberGroup = createNewGroup(line, groups);
-                }
-            } else {
+                i++;
+            }
+            if (isNull(numberGroup)) {
                 numberGroup = createNewGroup(line, groups);
+            } else {
+                groups.get(numberGroup).add(line);
             }
             addColumns(columns, words, numberGroup);
         }
@@ -150,17 +154,27 @@ public class GroupingRow {
      */
     private void addColumns(List<Column> columns, String[] words, int numberGroup) {
         for (int k = 0; k < words.length; k++) {
-            if (k < columns.size() && words[k].isEmpty()) {
-                columns.add(new Column());
-            } else if (k < columns.size() && !words[k].isEmpty()) {
+            if (k < columns.size() && !words[k].isEmpty()) {
                 columns.get(k).addUniqueWord(words[k], numberGroup);
             } else if (k >= columns.size() && words[k].isEmpty()) {
                 columns.add(new Column());
-            } else {
+            } else if (k >= columns.size() && !words[k].isEmpty()) {
                 Column column = new Column();
                 column.addUniqueWord(words[k], numberGroup);
                 columns.add(column);
             }
         }
+    }
+
+    /**
+     * Возвращает строку массив слов из строки
+     *
+     * @param line - линия
+     * @return массив строк
+     */
+    private String[] getWordsLine(String line) {
+        return Arrays.stream(line.split(";"))
+                .map(word -> word.replace("\"", ""))
+                .toArray(String[]::new);
     }
 }
